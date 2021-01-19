@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { right, left, Either, isLeft } from "fp-ts/lib/Either"
 import { pipe } from 'fp-ts/lib/function';
-import { getOrElse } from 'fp-ts/lib/Option';
+
 
 
  /*
@@ -60,18 +60,15 @@ class TicTacToe {
     private lastMovePlayerWasY = true;
     postAMove(x: number, y: number, player: string): any {
         let result: Either<any,any> = pipe( 
-            {"player": player, "lastMovePlayerWasY": this.lastMovePlayerWasY, "x":x , "y":y},
+            {"player": player, "lastMovePlayerWasY": this.lastMovePlayerWasY, "x":x , "y":y, "alreadyUsed": this.alreadyUsed},
             errorIfWrongTurn,
-            handlePreviousError_or_OutOfBoard
+            handlePreviousError_or_OutOfBoard,
+            handlePreviousError_or_AlreadyTakenPlace
         )
         if (isLeft(result)){
             return result.left
         }
-
         this.lastMovePlayerWasY = player === 'Y'
-        if(this.alreadyUsed[x+""+y]){
-            return { 'error': 'move on already taken place'}
-        }
         this.alreadyUsed[x+""+y] = true;
         return { 'status': 'OK'}
     }
@@ -85,6 +82,13 @@ function errorIfWrongTurn(params): Either<any,any>{
     return right(params)
 }
 
+function handlePreviousError_or_AlreadyTakenPlace(either: Either<any,any>): Either<any,any> {
+    if(isLeft(either)){
+        return either
+    }
+    return errorIfPlaceIsTaken(either.right)
+}
+
 function handlePreviousError_or_OutOfBoard(either: Either<any,any>): Either<any,any> {
     if(isLeft(either)){
         return either
@@ -92,12 +96,20 @@ function handlePreviousError_or_OutOfBoard(either: Either<any,any>): Either<any,
     return errorIfOutOfBoard(either.right)
 }
 
- function errorIfOutOfBoard( {x , y} ): any {
+ function errorIfOutOfBoard( params:any ):  Either<Object,Object> {
+    let {x , y} = params;
     if( x > 2 || x < 0 || y > 2 || y < 0){
         return left({ 'error': 'move out of the board'})
     }
-    return right("")
+    return right(params)
 }
 
+function errorIfPlaceIsTaken(params: any): Either<Object,Object> {
+    var { alreadyUsed, x, y } = params
+    if(alreadyUsed[x+""+y]){
+        return left({ 'error': 'move on already taken place'})
+    }
+    return right(params)
+}
 
 
