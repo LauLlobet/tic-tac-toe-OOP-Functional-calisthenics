@@ -44,7 +44,9 @@ describe('TicTacToe Should', () => {
     it('prevent playing two times in the same position',() => {
         let tictactoe = new TicTacToe();
 
-        tictactoe.postAMove(2,2,'X')
+        tictactoe.postAMove(1,1,'X')
+        expect(tictactoe.postAMove(2,2,'X'))
+        .eql({'status':"OK"})
         expect(tictactoe.postAMove(2, 2, 'X'))
         .eql({ 'error': 'move on already taken place'});
     })
