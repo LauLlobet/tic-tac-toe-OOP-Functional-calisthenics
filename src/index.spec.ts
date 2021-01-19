@@ -1,4 +1,8 @@
 import { expect } from 'chai';
+import { right, left, Either, isLeft } from "fp-ts/lib/Either"
+import { pipe } from 'fp-ts/lib/function';
+
+
  /*
     ({} → nil) no code at all → code that employs nil
     (nil → constant)
@@ -54,9 +58,14 @@ class TicTacToe {
     private alreadyUsed: { [id: string] : boolean; } = {};
     private lastMovePlayerWasY = true;
     postAMove(x: number, y: number, player: string): any {
-        if(player !== 'X' && this.lastMovePlayerWasY ){
-            return {'error': 'move by an incorrect player, expected X'}
+        let result: Either<Object,Object> = pipe( 
+            {"player": player, "lastMovePlayerWasY": this.lastMovePlayerWasY},
+            this.errorIfWrongTurn
+        )
+        if (isLeft(result)){
+            return result.left
         }
+
         this.lastMovePlayerWasY = player === 'Y'
         if( x > 2 || x < 0 || y > 2 || y < 0){
             return { 'error': 'move out of the board'}
@@ -66,6 +75,13 @@ class TicTacToe {
         }
         this.alreadyUsed[x+""+y] = true;
         return { 'status': 'OK'}
+    }
+
+    errorIfWrongTurn({ player, lastMovePlayerWasY }): Either<Object,Object>{
+        if(player !== 'X' && lastMovePlayerWasY ) {
+            return left({'error': 'move by an incorrect player, expected X'})
+        }
+        return right("")
     }
  }
 
