@@ -1,13 +1,13 @@
 import { expect } from 'chai';
  /*
-    ({} → nil) no code at all → code that employs nil
+ 📌 ({} → nil) no code at all → code that employs nil
     (nil → constant)
     (constant → constant+) a simple constant to a more complex constant
     (constant → scalar) replacing a constant with a variable or an argument
     (statement → statements) adding more unconditional statements.
     (unconditional → if) splitting the execution path
     (scalar → array)
- 📌 (array → container)
+    (array → container)
     (statement → tail-recursion)
     (if → while)
     (statement → non-tail-recursion)
@@ -38,13 +38,6 @@ describe('TicTacToe Should', () => {
         let tictactoe = new TicTacToe();
 
         tictactoe.postAMove(1,1,'X')
-        expect(tictactoe.postAMove(1, 1, 'X'))
-        .eql({ 'error': 'move on already taken place'});
-    })
-    it('prevent playing two times in the same position',() => {
-        let tictactoe = new TicTacToe();
-
-        tictactoe.postAMove(1,1,'X')
         expect(tictactoe.postAMove(2,2,'X'))
         .eql({'status':"OK"})
         expect(tictactoe.postAMove(2, 2, 'X'))
@@ -61,7 +54,6 @@ class TicTacToe {
             return { 'error': 'move on already taken place'}
         }
         this.alreadyUsed[x+""+y] = true;
-        
         return { 'status': 'OK'}
     }
  }
