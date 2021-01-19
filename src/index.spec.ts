@@ -15,6 +15,8 @@ describe('TicTacToe Should', () => {
         let tictactoe = new TicTacToe()
         expect(tictactoe.postAMove(4, 1, 'X'))
         .eql({ 'error': 'move out of the board'});
+        expect(tictactoe.postAMove(-1, 1, 'X'))
+        .eql({ 'error': 'move out of the board'});
     });
     it('allow playing inside of the board', () =>
     {
