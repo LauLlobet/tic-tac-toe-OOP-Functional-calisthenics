@@ -1,15 +1,5 @@
 import { expect } from 'chai';
  
-class TicTacToe {
-    postAMove(x: number, y: number, position: string): any {
-        if( x > 2 || x < 0 || y > 2 || y < 0){
-            return { 'error': 'move out of the board'}
-        }
-        return { 'status': 'OK'}
-    }
- }
-
-
 describe('TicTacToe Should', () => {
     it('prevent playing out of the board', () => {
         let tictactoe = new TicTacToe()
@@ -29,3 +19,14 @@ describe('TicTacToe Should', () => {
         .eql({ 'status': 'OK'});
     })
 });
+class TicTacToe {
+    postAMove(x: number, y: number, position: string): any {
+        if( x > 2 || x < 0 || y > 2 || y < 0){
+            return { 'error': 'move out of the board'}
+        }
+        return { 'status': 'OK'}
+    }
+ }
+
+
+
