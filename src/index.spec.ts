@@ -43,6 +43,12 @@ describe('TicTacToe Should', () => {
         expect(tictactoe.postAMove(2, 2, 'X'))
         .eql({ 'error': 'move on already taken place'});
     })
+    it('prevent wrong player from posting',() => {
+        let tictactoe = new TicTacToe();
+
+        expect(tictactoe.postAMove(1,1,'Y'))
+        .eql({'error': 'move by an incorrect player, expected X'})
+    })
 });
 class TicTacToe {
     private alreadyUsed: { [id: string] : boolean; } = {};
