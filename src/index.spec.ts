@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { right, left, Either, isLeft } from "fp-ts/lib/Either"
 import { pipe } from 'fp-ts/lib/function';
+import { getOrElse } from 'fp-ts/lib/Option';
 
 
  /*
@@ -58,18 +59,16 @@ class TicTacToe {
     private alreadyUsed: { [id: string] : boolean; } = {};
     private lastMovePlayerWasY = true;
     postAMove(x: number, y: number, player: string): any {
-        let result: Either<Object,Object> = pipe( 
-            {"player": player, "lastMovePlayerWasY": this.lastMovePlayerWasY},
-            this.errorIfWrongTurn
+        let result: Either<any,any> = pipe( 
+            {"player": player, "lastMovePlayerWasY": this.lastMovePlayerWasY, "x":x , "y":y},
+            this.errorIfWrongTurn,
+            this.handlePreviousError_or_OutOfBoard
         )
         if (isLeft(result)){
             return result.left
         }
 
         this.lastMovePlayerWasY = player === 'Y'
-        if( x > 2 || x < 0 || y > 2 || y < 0){
-            return { 'error': 'move out of the board'}
-        }
         if(this.alreadyUsed[x+""+y]){
             return { 'error': 'move on already taken place'}
         }
@@ -77,13 +76,32 @@ class TicTacToe {
         return { 'status': 'OK'}
     }
 
-    errorIfWrongTurn({ player, lastMovePlayerWasY }): Either<Object,Object>{
+    errorIfWrongTurn(params): Either<any,any>{
+        let { player, lastMovePlayerWasY } = params
         if(player !== 'X' && lastMovePlayerWasY ) {
             return left({'error': 'move by an incorrect player, expected X'})
         }
-        return right("")
+        return right(params)
     }
+
+
+
+    handlePreviousError_or_OutOfBoard(either: Either<any,any>): Either<any,any> {
+        if(isLeft(either)){
+            return either
+        }
+        return errorIfOutOfBoard(either.right)
+    }
+
+
  }
+
+ function errorIfOutOfBoard( {x , y} ): any {
+    if( x > 2 || x < 0 || y > 2 || y < 0){
+        return left({ 'error': 'move out of the board'})
+    }
+    return right("")
+}
 
 
 
