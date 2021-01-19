@@ -5,9 +5,9 @@ import { expect } from 'chai';
     (constant → constant+) a simple constant to a more complex constant
     (constant → scalar) replacing a constant with a variable or an argument
     (statement → statements) adding more unconditional statements.
-📌  (unconditional → if) splitting the execution path
+    (unconditional → if) splitting the execution path
     (scalar → array)
-    (array → container)
+ 📌 (array → container)
     (statement → tail-recursion)
     (if → while)
     (statement → non-tail-recursion)
@@ -52,20 +52,16 @@ describe('TicTacToe Should', () => {
     })
 });
 class TicTacToe {
-    private alreadyUsed = false;
+    private alreadyUsed: { [id: string] : boolean; } = {};
     postAMove(x: number, y: number, position: string): any {
         if( x > 2 || x < 0 || y > 2 || y < 0){
             return { 'error': 'move out of the board'}
         }
-        if(this.alreadyUsed){
+        if(this.alreadyUsed[x+""+y]){
             return { 'error': 'move on already taken place'}
         }
-        if(x+""+y == "11"){
-            this.alreadyUsed= true;
-        }
-        if(x+""+y == "22"){
-            this.alreadyUsed= true;
-        }
+        this.alreadyUsed[x+""+y] = true;
+        
         return { 'status': 'OK'}
     }
  }
