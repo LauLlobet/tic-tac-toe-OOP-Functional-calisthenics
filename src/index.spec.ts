@@ -1,11 +1,16 @@
 import { expect } from 'chai';
+ 
+class TicTacToe {
+    postAMove(x: number, y: number, position: string): any {
+        return null
+    }
+ }
 
-function sum(a: number, b: number): number {
-    return a + b;
-}
 
-describe('sample test-suite', () => {
-    it('sum 1 + 3 should be 4', () => {
-        expect(sum(1, 3)).eql(4);
+describe('TicTacToe Should', () => {
+    it('prevent playing out of the board', () => {
+        let tictactoe = new TicTacToe()
+        expect(tictactoe.postAMove(4, 1, 'X'))
+        .eql({ 'error': 'move out of the board'});
     });
 });
