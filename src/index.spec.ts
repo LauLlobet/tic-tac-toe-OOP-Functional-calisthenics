@@ -1,6 +1,6 @@
 import { expect } from 'chai';
  /*
- 📌 ({} → nil) no code at all → code that employs nil
+    ({} → nil) no code at all → code that employs nil
     (nil → constant)
     (constant → constant+) a simple constant to a more complex constant
     (constant → scalar) replacing a constant with a variable or an argument
@@ -12,7 +12,7 @@ import { expect } from 'chai';
     (if → while)
     (statement → non-tail-recursion)
     (expression → function) replacing an expression with a function or algorithm
-    (variable → assignment) replacing the value of a variable.
+📌  (variable → assignment) replacing the value of a variable.
     (case) adding a case (or else) to an existing switch or if
 */
 
@@ -52,7 +52,12 @@ describe('TicTacToe Should', () => {
 });
 class TicTacToe {
     private alreadyUsed: { [id: string] : boolean; } = {};
-    postAMove(x: number, y: number, position: string): any {
+    private lastMovePlayerWasY = true;
+    postAMove(x: number, y: number, player: string): any {
+        if(player !== 'X' && this.lastMovePlayerWasY ){
+            return {'error': 'move by an incorrect player, expected X'}
+        }
+        this.lastMovePlayerWasY = player === 'Y'
         if( x > 2 || x < 0 || y > 2 || y < 0){
             return { 'error': 'move out of the board'}
         }
