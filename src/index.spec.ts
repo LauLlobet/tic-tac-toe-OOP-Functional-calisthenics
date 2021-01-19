@@ -1,11 +1,11 @@
 import { expect } from 'chai';
  /*
- 📌 ({} → nil) no code at all → code that employs nil
+    ({} → nil) no code at all → code that employs nil
     (nil → constant)
     (constant → constant+) a simple constant to a more complex constant
     (constant → scalar) replacing a constant with a variable or an argument
     (statement → statements) adding more unconditional statements.
-    (unconditional → if) splitting the execution path
+📌  (unconditional → if) splitting the execution path
     (scalar → array)
     (array → container)
     (statement → tail-recursion)
@@ -59,6 +59,9 @@ class TicTacToe {
             return { 'error': 'move on already taken place'}
         }
         if(x+""+y == "11"){
+            this.alreadyUsed= true;
+        }
+        if(x+""+y == "22"){
             this.alreadyUsed= true;
         }
         return { 'status': 'OK'}
