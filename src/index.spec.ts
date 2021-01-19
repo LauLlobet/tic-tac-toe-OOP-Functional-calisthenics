@@ -61,8 +61,8 @@ class TicTacToe {
     postAMove(x: number, y: number, player: string): any {
         let result: Either<any,any> = pipe( 
             {"player": player, "lastMovePlayerWasY": this.lastMovePlayerWasY, "x":x , "y":y},
-            this.errorIfWrongTurn,
-            this.handlePreviousError_or_OutOfBoard
+            errorIfWrongTurn,
+            handlePreviousError_or_OutOfBoard
         )
         if (isLeft(result)){
             return result.left
@@ -75,26 +75,22 @@ class TicTacToe {
         this.alreadyUsed[x+""+y] = true;
         return { 'status': 'OK'}
     }
-
-    errorIfWrongTurn(params): Either<any,any>{
-        let { player, lastMovePlayerWasY } = params
-        if(player !== 'X' && lastMovePlayerWasY ) {
-            return left({'error': 'move by an incorrect player, expected X'})
-        }
-        return right(params)
-    }
-
-
-
-    handlePreviousError_or_OutOfBoard(either: Either<any,any>): Either<any,any> {
-        if(isLeft(either)){
-            return either
-        }
-        return errorIfOutOfBoard(either.right)
-    }
-
-
  }
+
+function errorIfWrongTurn(params): Either<any,any>{
+    let { player, lastMovePlayerWasY } = params
+    if(player !== 'X' && lastMovePlayerWasY ) {
+        return left({'error': 'move by an incorrect player, expected X'})
+    }
+    return right(params)
+}
+
+function handlePreviousError_or_OutOfBoard(either: Either<any,any>): Either<any,any> {
+    if(isLeft(either)){
+        return either
+    }
+    return errorIfOutOfBoard(either.right)
+}
 
  function errorIfOutOfBoard( {x , y} ): any {
     if( x > 2 || x < 0 || y > 2 || y < 0){
