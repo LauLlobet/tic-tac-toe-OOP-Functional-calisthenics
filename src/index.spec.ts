@@ -2,7 +2,10 @@ import { expect } from 'chai';
  
 class TicTacToe {
     postAMove(x: number, y: number, position: string): any {
-        return { 'error': 'move out of the board'}
+        if( x > 2 ){
+            return { 'error': 'move out of the board'}
+        }
+        return { 'status': 'OK'}
     }
  }
 
