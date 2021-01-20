@@ -1,10 +1,14 @@
 import { expect } from 'chai';
- 
 class TicTacToe {
     xTracker = new WinningPlayerTracker();
-    yTracker = new WinningPlayerTracker();
+    yTracker = new WinningPlayerTracker();    
+    private tttMoveEligibility = new TTTMoveElegibility();
 
     postAMove(x: number, y: number, player: string): any {
+        var {isElegible, message}= this.tttMoveEligibility.isElegible(x,y,player);
+        if(!isElegible){
+            return message;
+        }
         if('X' == player && this.xTracker.trackAndCheckHasWonX(x,y)){
             return { 'winner': 'X'}
         }
@@ -15,6 +19,24 @@ class TicTacToe {
     }
  }
 
+ class TTTMoveElegibility {
+    private alreadyUsed: { [id: string] : boolean; } = {};
+    private lastMovePlayerWasY = true;
+    isElegible(x: number, y: number, player: string): any {
+        if(player !== 'X' && this.lastMovePlayerWasY ){
+            return {'message': { 'error': 'move by an incorrect player, expected X'}, 'isElegible': false};
+        }
+        this.lastMovePlayerWasY = player === 'Y'
+        if( x > 2 || x < 0 || y > 2 || y < 0){
+            return {'message': { 'error': 'move out of the board'}, 'isElegible': false};
+        }
+        if(this.alreadyUsed[x+""+y]){
+            return {'message': { 'error': 'move on already taken place'}, 'isElegible': false};
+        }
+        this.alreadyUsed[x+""+y] = true;
+        return {'isElegible': true};
+    }
+}
  class WinningPlayerTracker {
     private rows = [0,0,0]
     private columns = [0,0,0]
@@ -255,5 +277,37 @@ describe('TicTacToe Should', () => {
         tictactoe.postAMove(2, 1, 'X')
         expect(tictactoe.postAMove(1, 1, 'Y'))
         .eql({ 'winner': 'Y'});
+    });
+    it('prevent playing out of the board', () => {
+        let tictactoe = new TicTacToe()
+        expect(tictactoe.postAMove(4, 1, 'X'))
+        .eql({ 'error': 'move out of the board'});
+        expect(tictactoe.postAMove(-1, 1, 'X'))
+        .eql({ 'error': 'move out of the board'});
+        expect(tictactoe.postAMove(1, 4, 'X'))
+        .eql({ 'error': 'move out of the board'});
+        expect(tictactoe.postAMove(1, -1, 'X'))
+        .eql({ 'error': 'move out of the board'});
+    });
+    it('allow playing inside of the board', () =>
+    {
+        let tictactoe = new TicTacToe();
+        expect(tictactoe.postAMove(1, 1, 'X'))
+        .eql({"winner": "not decided yet"});
+    })
+    it('prevent playing two times in the same position',() => {
+        let tictactoe = new TicTacToe();
+
+        tictactoe.postAMove(1,1,'X')
+        expect(tictactoe.postAMove(2,2,'X'))
+        .eql({"winner": "not decided yet"})
+        expect(tictactoe.postAMove(2, 2, 'X'))
+        .eql({ 'error': 'move on already taken place'});
+    })
+    it('prevent wrong player from posting',() => {
+        let tictactoe = new TicTacToe();
+
+        expect(tictactoe.postAMove(1,1,'Y'))
+        .eql({'error': 'move by an incorrect player, expected X'})
     })
 });
