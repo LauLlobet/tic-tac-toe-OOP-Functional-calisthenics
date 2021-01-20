@@ -1,19 +1,23 @@
 import { expect } from 'chai';
  
 class TicTacToe {
-    public rows = [0,0,0]
-    public columns = [0,0,0]
-    public diagonal = 0
-    public upwardsDiagonal = 0
-    public trackedPlayer = 'X'
+    xTracker = new WinningPlayerTracker();
+
     postAMove(x: number, y: number, player: string): any {
         if('X' == player){
-            if(this.trackAndCheckHasWonX(x,y)){
+            if(this.xTracker.trackAndCheckHasWonX(x,y)){
                 return { 'winner': 'X'}
             }
         }
         return {'winner': 'not decided yet'}
     }
+ }
+
+ class WinningPlayerTracker {
+    public rows = [0,0,0]
+    public columns = [0,0,0]
+    public diagonal = 0
+    public upwardsDiagonal = 0
     trackAndCheckHasWonX(x: number, y: number): any {
         this.rows[y] = this.rows[y] +1
         this.columns[x] = this.columns[x] +1
