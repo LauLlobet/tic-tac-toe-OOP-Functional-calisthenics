@@ -1,8 +1,15 @@
 import { expect } from 'chai';
  
 class TicTacToe {
-    postAMove(x: number, y: number, position: string): any {
-        return { 'winner': 'not decided yet'}
+    public Xmoves = 0
+    postAMove(x: number, y: number, player: string): any {
+        if(player == 'X'){
+            this.Xmoves++
+        }
+        if(this.Xmoves < 3){
+            return { 'winner': 'not decided yet'}
+        }
+        return { 'winner': 'X'}
     }
  }
 
