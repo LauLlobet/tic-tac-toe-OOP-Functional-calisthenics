@@ -50,22 +50,33 @@ describe('TicTacToe Should', () => {
         .eql({'error': 'move by an incorrect player, expected X'})
     })
 });
-class TicTacToe {
+class TTTMoveElegibility {
     private alreadyUsed: { [id: string] : boolean; } = {};
     private lastMovePlayerWasY = true;
-    postAMove(x: number, y: number, player: string): any {
+    isElegible(x: number, y: number, player: string): any {
         if(player !== 'X' && this.lastMovePlayerWasY ){
-            return {'error': 'move by an incorrect player, expected X'}
+            return {'message': { 'error': 'move by an incorrect player, expected X'}, 'isElegible': false};
         }
         this.lastMovePlayerWasY = player === 'Y'
         if( x > 2 || x < 0 || y > 2 || y < 0){
-            return { 'error': 'move out of the board'}
+            return {'message': { 'error': 'move out of the board'}, 'isElegible': false};
         }
         if(this.alreadyUsed[x+""+y]){
-            return { 'error': 'move on already taken place'}
+            return {'message': { 'error': 'move on already taken place'}, 'isElegible': false};
         }
         this.alreadyUsed[x+""+y] = true;
-        return { 'status': 'OK'}
+        return {'isElegible': true};
+    }
+}
+class TicTacToe {
+    private tttMoveEligibility = new TTTMoveElegibility();
+
+    postAMove(x: number, y: number, player: string): any {
+        var {isElegible, message}= this.tttMoveEligibility.isElegible(x,y,player);
+        if(!isElegible){
+            return message;
+        }
+        return {'status': 'OK'};
     }
  }
 
