@@ -1,4 +1,20 @@
 import { expect } from 'chai';
+
+/*
+   Only one level of indentation per method
+   Don’t use the ELSE keyword
+   Wrap all primitives and strings
+   First class collections (wrap all collections)
+   Only one dot per line dog.Body.Tail.Wag() => dog.ExpressHappiness()
+   No abbreviations
+   Keep all entities small
+   [10 files per package, 
+    50 lines per class, 
+    5 lines per method, 
+    2 arguments per method]
+   No classes with more than two instance variables
+   No public getters/setters/properties
+*/
 class TicTacToe {
     xTracker = new WinningPlayerTracker();
     yTracker = new WinningPlayerTracker();    
