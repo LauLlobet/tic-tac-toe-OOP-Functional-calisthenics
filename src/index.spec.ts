@@ -6,7 +6,7 @@ import { expect } from 'chai';
    Wrap all primitives and strings
    First class collections (wrap all collections)
 👌 Only one dot per line dog.Body.Tail.Wag() => dog.ExpressHappiness()
-   No abbreviations
+👌 No abbreviations
    Keep all entities small
 👌 [10 files per package, 
 👌  50 lines per class, 
@@ -16,55 +16,58 @@ import { expect } from 'chai';
 👌 No public getters/setters/properties
 */
 class TicTacToe {
-    private xTracker = new WinningPlayerTracker();
-    private yTracker = new WinningPlayerTracker();    
-    private tttMoveEligibility = new TTTMoveElegibility();
+    private xPlayerTracker = new WinningPlayerTracker();
+    private oPlayerTracker = new WinningPlayerTracker();    
+    private moveEligibilityChecker = new MoveElegibilityChecker();
 
-    postAMove(x: number, y: number, player: string): any {
-        var {isElegible, message}= this.tttMoveEligibility.isElegible(x,y,player);
-        if(!isElegible){
-            return message;
+    postAMove(moveColumn: number, moveRow: number, movePlayerSymbol: string): any {
+        var {isValidMove, invalidMoveMessage} = this.moveEligibilityChecker.isElegible(moveColumn,moveRow,movePlayerSymbol);
+        if(!isValidMove){
+            return invalidMoveMessage;
         }
-        if('X' == player && this.xTracker.trackAndCheckHasWonX(x,y)){
+        if('X' == movePlayerSymbol && this.xPlayerTracker.trackAndCheckIfHasWon(moveColumn,moveRow)){
             return { 'winner': 'X'}
         }
-        if('Y' == player && this.yTracker.trackAndCheckHasWonX(x,y)){
-            return { 'winner': 'Y'}
+        if('O' == movePlayerSymbol && this.oPlayerTracker.trackAndCheckIfHasWon(moveColumn,moveRow)){
+            return { 'winner': 'O'}
         }
         return {'winner': 'not decided yet'}
     }
  }
 
- class TTTMoveElegibility {
-    private alreadyUsed: { [id: string] : boolean; } = {};
-    private lastMovePlayerWasY = true;
-    isElegible(x: number, y: number, player: string): any {
-        if(player !== 'X' && this.lastMovePlayerWasY ){
-            return {'message': { 'error': 'move by an incorrect player, expected X'}, 'isElegible': false};
+ class MoveElegibilityChecker {
+    private alreadyUsedMove: { [moveId: string] : boolean; } = {};
+    private isPreviousMoveO = true;
+    isElegible(moveColumn: number, moveRow: number, movePlayerSymbol: string): any {
+        if(movePlayerSymbol !== 'X' && this.isPreviousMoveO ){
+            return {'invalidMoveMessage': { 'error': 'move by an incorrect player, expected X'}, 'isValidMove': false};
         }
-        this.lastMovePlayerWasY = player === 'Y'
-        if( x > 2 || x < 0 || y > 2 || y < 0){
-            return {'message': { 'error': 'move out of the board'}, 'isElegible': false};
+        this.isPreviousMoveO = movePlayerSymbol === 'O'
+        if( moveColumn > 2 || moveColumn < 0 || moveRow > 2 || moveRow < 0){
+            return {'invalidMoveMessage': { 'error': 'move out of the board'}, 'isValidMove': false};
         }
-        if(this.alreadyUsed[x+""+y]){
-            return {'message': { 'error': 'move on already taken place'}, 'isElegible': false};
+        if(this.alreadyUsedMove[moveColumn+""+moveRow]){
+            return {'invalidMoveMessage': { 'error': 'move on already taken place'}, 'isValidMove': false};
         }
-        this.alreadyUsed[x+""+y] = true;
-        return {'isElegible': true};
+        this.alreadyUsedMove[moveColumn+""+moveRow] = true;
+        return {'isValidMove': true};
     }
 }
  class WinningPlayerTracker {
-    private rows = [0,0,0]
-    private columns = [0,0,0]
-    private diagonal = 0
-    private upwardsDiagonal = 0
+    private accumulatedSymbolsPerRow = [0,0,0]
+    private accumulatedSymbolsPerColumn = [0,0,0]
+    private accumulatedSymbolsInDownwardsDiagonal = 0
+    private accumulatedSymbolsInUpwardsDiagonal = 0
 
-    trackAndCheckHasWonX(x: number, y: number): boolean {
-        this.rows[y]++
-        this.columns[x]++
-        this.diagonal += x==y ? 1 : 0
-        this.upwardsDiagonal += x+y==2 ? 1 :0
-        if(this.rows[y] < 3 && this.columns[x] <3 && this.diagonal<3 && this.upwardsDiagonal<3){
+    trackAndCheckIfHasWon(newSymbolColumn: number, newSymbolRow: number): boolean {
+        this.accumulatedSymbolsPerRow[newSymbolRow]++
+        this.accumulatedSymbolsPerColumn[newSymbolColumn]++
+        this.accumulatedSymbolsInDownwardsDiagonal += newSymbolColumn==newSymbolRow ? 1 : 0
+        this.accumulatedSymbolsInUpwardsDiagonal += newSymbolColumn+newSymbolRow==2 ? 1 :0
+        if(this.accumulatedSymbolsPerRow[newSymbolRow] < 3 
+            && this.accumulatedSymbolsPerColumn[newSymbolColumn] <3 
+            && this.accumulatedSymbolsInDownwardsDiagonal<3 
+            && this.accumulatedSymbolsInUpwardsDiagonal<3){
             return false
         }
         return true
@@ -77,9 +80,9 @@ describe('TicTacToe Should', () => {
         let tictactoe = new TicTacToe()
         expect(tictactoe.postAMove(0, 1, 'X'))
         .eql({ 'winner': 'not decided yet'});
-        tictactoe.postAMove(0, 2, 'Y')
+        tictactoe.postAMove(0, 2, 'O')
         tictactoe.postAMove(1, 1, 'X')
-        tictactoe.postAMove(1, 2, 'Y')
+        tictactoe.postAMove(1, 2, 'O')
         expect(tictactoe.postAMove(1, 0, 'X'))
         .eql({ 'winner': 'not decided yet'});
 
@@ -88,10 +91,10 @@ describe('TicTacToe Should', () => {
         let tictactoe = new TicTacToe()
         expect(tictactoe.postAMove(0, 1, 'X'))
         .eql({ 'winner': 'not decided yet'});
-        tictactoe.postAMove(0, 2, 'Y')
+        tictactoe.postAMove(0, 2, 'O')
         expect(tictactoe.postAMove(2, 1, 'X'))
         .eql({ 'winner': 'not decided yet'});
-        tictactoe.postAMove(2, 2, 'Y')
+        tictactoe.postAMove(2, 2, 'O')
         expect(tictactoe.postAMove(1, 1, 'X'))
         .eql({ 'winner': 'X'});
     })
@@ -99,10 +102,10 @@ describe('TicTacToe Should', () => {
         let tictactoe = new TicTacToe()
         expect(tictactoe.postAMove(0, 2, 'X'))
         .eql({ 'winner': 'not decided yet'});
-        tictactoe.postAMove(0, 0, 'Y')
+        tictactoe.postAMove(0, 0, 'O')
         expect(tictactoe.postAMove(2, 2, 'X'))
         .eql({ 'winner': 'not decided yet'});
-        tictactoe.postAMove(2, 0, 'Y')
+        tictactoe.postAMove(2, 0, 'O')
         expect(tictactoe.postAMove(1, 2, 'X'))
         .eql({ 'winner': 'X'});
     })
@@ -110,10 +113,10 @@ describe('TicTacToe Should', () => {
         let tictactoe = new TicTacToe()
         expect(tictactoe.postAMove(0, 0, 'X'))
         .eql({ 'winner': 'not decided yet'});
-        tictactoe.postAMove(0, 1, 'Y')
+        tictactoe.postAMove(0, 1, 'O')
         expect(tictactoe.postAMove(2, 0, 'X'))
         .eql({ 'winner': 'not decided yet'});
-        tictactoe.postAMove(2, 1, 'Y')
+        tictactoe.postAMove(2, 1, 'O')
         expect(tictactoe.postAMove(1, 0, 'X'))
         .eql({ 'winner': 'X'});
     })
@@ -121,10 +124,10 @@ describe('TicTacToe Should', () => {
         let tictactoe = new TicTacToe()
         expect(tictactoe.postAMove(1, 0, 'X'))
         .eql({ 'winner': 'not decided yet'});
-        tictactoe.postAMove(2, 0, 'Y')
+        tictactoe.postAMove(2, 0, 'O')
         expect(tictactoe.postAMove(1, 2, 'X'))
         .eql({ 'winner': 'not decided yet'});
-        tictactoe.postAMove(2, 2, 'Y')
+        tictactoe.postAMove(2, 2, 'O')
         expect(tictactoe.postAMove(1, 1, 'X'))
         .eql({ 'winner': 'X'});
     })
@@ -132,10 +135,10 @@ describe('TicTacToe Should', () => {
         let tictactoe = new TicTacToe()
         expect(tictactoe.postAMove(2, 0, 'X'))
         .eql({ 'winner': 'not decided yet'});
-        tictactoe.postAMove(0, 0, 'Y')
+        tictactoe.postAMove(0, 0, 'O')
         expect(tictactoe.postAMove(2, 2, 'X'))
         .eql({ 'winner': 'not decided yet'});
-        tictactoe.postAMove(0, 2, 'Y')
+        tictactoe.postAMove(0, 2, 'O')
         expect(tictactoe.postAMove(2, 1, 'X'))
         .eql({ 'winner': 'X'});
     })
@@ -143,10 +146,10 @@ describe('TicTacToe Should', () => {
         let tictactoe = new TicTacToe()
         expect(tictactoe.postAMove(0, 0, 'X'))
         .eql({ 'winner': 'not decided yet'});
-        tictactoe.postAMove(1, 0, 'Y')
+        tictactoe.postAMove(1, 0, 'O')
         expect(tictactoe.postAMove(0, 2, 'X'))
         .eql({ 'winner': 'not decided yet'});
-        tictactoe.postAMove(1, 2, 'Y')
+        tictactoe.postAMove(1, 2, 'O')
         expect(tictactoe.postAMove(0, 1, 'X'))
         .eql({ 'winner': 'X'});
     })
@@ -154,10 +157,10 @@ describe('TicTacToe Should', () => {
         let tictactoe = new TicTacToe()
         expect(tictactoe.postAMove(0, 0, 'X'))
         .eql({ 'winner': 'not decided yet'});
-        tictactoe.postAMove(0, 2, 'Y')
+        tictactoe.postAMove(0, 2, 'O')
         expect(tictactoe.postAMove(2, 2, 'X'))
         .eql({ 'winner': 'not decided yet'});
-        tictactoe.postAMove(1, 2, 'Y')
+        tictactoe.postAMove(1, 2, 'O')
         expect(tictactoe.postAMove(1, 1, 'X'))
         .eql({ 'winner': 'X'});
     })
@@ -165,10 +168,10 @@ describe('TicTacToe Should', () => {
         let tictactoe = new TicTacToe()
         expect(tictactoe.postAMove(2, 0, 'X'))
         .eql({ 'winner': 'not decided yet'});
-        tictactoe.postAMove(1, 2, 'Y')
+        tictactoe.postAMove(1, 2, 'O')
         expect(tictactoe.postAMove(0, 2, 'X'))
         .eql({ 'winner': 'not decided yet'});
-        tictactoe.postAMove(2, 1, 'Y')
+        tictactoe.postAMove(2, 1, 'O')
         expect(tictactoe.postAMove(1, 1, 'X'))
         .eql({ 'winner': 'X'});
     })
@@ -177,10 +180,10 @@ describe('TicTacToe Should', () => {
         let tictactoe = new TicTacToe()
         expect(tictactoe.postAMove(0, 0, 'X'))
         .eql({ 'winner': 'not decided yet'});
-        tictactoe.postAMove(1, 2, 'Y')
+        tictactoe.postAMove(1, 2, 'O')
         expect(tictactoe.postAMove(1, 1, 'X'))
         .eql({ 'winner': 'not decided yet'});
-        tictactoe.postAMove(2, 1, 'Y')
+        tictactoe.postAMove(2, 1, 'O')
         expect(tictactoe.postAMove(0, 1, 'X'))
         .eql({ 'winner': 'not decided yet'});
     })
@@ -189,110 +192,110 @@ describe('TicTacToe Should', () => {
     it('not win if theres no 3 contiguous moves', () => {
         let tictactoe = new TicTacToe()
         tictactoe.postAMove(2, 2, 'X')
-        expect(tictactoe.postAMove(0, 1, 'Y'))
+        expect(tictactoe.postAMove(0, 1, 'O'))
         .eql({ 'winner': 'not decided yet'});
         tictactoe.postAMove(0, 2, 'X')
-        tictactoe.postAMove(1, 1, 'Y')
+        tictactoe.postAMove(1, 1, 'O')
         tictactoe.postAMove(1, 2, 'X')
-        expect(tictactoe.postAMove(1, 0, 'Y'))
+        expect(tictactoe.postAMove(1, 0, 'O'))
         .eql({ 'winner': 'not decided yet'});
 
     });
     it('win if there are three contiguopus moves on a first row', () => {
         let tictactoe = new TicTacToe()
         tictactoe.postAMove(0, 0, 'X')
-        expect(tictactoe.postAMove(0, 1, 'Y'))
+        expect(tictactoe.postAMove(0, 1, 'O'))
         .eql({ 'winner': 'not decided yet'});
         tictactoe.postAMove(0, 2, 'X')
-        expect(tictactoe.postAMove(2, 1, 'Y'))
+        expect(tictactoe.postAMove(2, 1, 'O'))
         .eql({ 'winner': 'not decided yet'});
         tictactoe.postAMove(2, 2, 'X')
-        expect(tictactoe.postAMove(1, 1, 'Y'))
-        .eql({ 'winner': 'Y'});
+        expect(tictactoe.postAMove(1, 1, 'O'))
+        .eql({ 'winner': 'O'});
     })
     it('win if there are three contiguopus moves on a second row', () => {
         let tictactoe = new TicTacToe()
         tictactoe.postAMove(1, 1, 'X')
-        expect(tictactoe.postAMove(0, 2, 'Y'))
+        expect(tictactoe.postAMove(0, 2, 'O'))
         .eql({ 'winner': 'not decided yet'});
         tictactoe.postAMove(0, 0, 'X')
-        expect(tictactoe.postAMove(2, 2, 'Y'))
+        expect(tictactoe.postAMove(2, 2, 'O'))
         .eql({ 'winner': 'not decided yet'});
         tictactoe.postAMove(2, 0, 'X')
-        expect(tictactoe.postAMove(1, 2, 'Y'))
-        .eql({ 'winner': 'Y'});
+        expect(tictactoe.postAMove(1, 2, 'O'))
+        .eql({ 'winner': 'O'});
     })
     it('win if there are three contiguopus moves on a third row', () => {
         let tictactoe = new TicTacToe()
         tictactoe.postAMove(1, 1, 'X')
-        expect(tictactoe.postAMove(0, 0, 'Y'))
+        expect(tictactoe.postAMove(0, 0, 'O'))
         .eql({ 'winner': 'not decided yet'});
         tictactoe.postAMove(0, 1, 'X')
-        expect(tictactoe.postAMove(2, 0, 'Y'))
+        expect(tictactoe.postAMove(2, 0, 'O'))
         .eql({ 'winner': 'not decided yet'});
         tictactoe.postAMove(2, 1, 'X')
-        expect(tictactoe.postAMove(1, 0, 'Y'))
-        .eql({ 'winner': 'Y'});
+        expect(tictactoe.postAMove(1, 0, 'O'))
+        .eql({ 'winner': 'O'});
     })
     it('win if there are three contiguopus moves on a first column', () => {
         let tictactoe = new TicTacToe()
         tictactoe.postAMove(0, 0, 'X')
-        expect(tictactoe.postAMove(1, 0, 'Y'))
+        expect(tictactoe.postAMove(1, 0, 'O'))
         .eql({ 'winner': 'not decided yet'});
         tictactoe.postAMove(2, 0, 'X')
-        expect(tictactoe.postAMove(1, 2, 'Y'))
+        expect(tictactoe.postAMove(1, 2, 'O'))
         .eql({ 'winner': 'not decided yet'});
         tictactoe.postAMove(2, 2, 'X')
-        expect(tictactoe.postAMove(1, 1, 'Y'))
-        .eql({ 'winner': 'Y'});
+        expect(tictactoe.postAMove(1, 1, 'O'))
+        .eql({ 'winner': 'O'});
     })
     it('win if there are three contiguopus moves on a second column', () => {
         let tictactoe = new TicTacToe()
         tictactoe.postAMove(1, 1, 'X')
-        expect(tictactoe.postAMove(2, 0, 'Y'))
+        expect(tictactoe.postAMove(2, 0, 'O'))
         .eql({ 'winner': 'not decided yet'});
         tictactoe.postAMove(0, 0, 'X')
-        expect(tictactoe.postAMove(2, 2, 'Y'))
+        expect(tictactoe.postAMove(2, 2, 'O'))
         .eql({ 'winner': 'not decided yet'});
         tictactoe.postAMove(0, 2, 'X')
-        expect(tictactoe.postAMove(2, 1, 'Y'))
-        .eql({ 'winner': 'Y'});
+        expect(tictactoe.postAMove(2, 1, 'O'))
+        .eql({ 'winner': 'O'});
     })
     it('win if there are three contiguopus moves on a third column', () => {
         let tictactoe = new TicTacToe()
         tictactoe.postAMove(2, 2, 'X')
-        expect(tictactoe.postAMove(0, 0, 'Y'))
+        expect(tictactoe.postAMove(0, 0, 'O'))
         .eql({ 'winner': 'not decided yet'});
         tictactoe.postAMove(1, 0, 'X')
-        expect(tictactoe.postAMove(0, 2, 'Y'))
+        expect(tictactoe.postAMove(0, 2, 'O'))
         .eql({ 'winner': 'not decided yet'});
         tictactoe.postAMove(1, 2, 'X')
-        expect(tictactoe.postAMove(0, 1, 'Y'))
-        .eql({ 'winner': 'Y'});
+        expect(tictactoe.postAMove(0, 1, 'O'))
+        .eql({ 'winner': 'O'});
     })
     it('win if there are three contiguopus moves on a downwards diagonal', () => {
         let tictactoe = new TicTacToe()
         tictactoe.postAMove(1, 0, 'X')
-        expect(tictactoe.postAMove(0, 0, 'Y'))
+        expect(tictactoe.postAMove(0, 0, 'O'))
         .eql({ 'winner': 'not decided yet'});
         tictactoe.postAMove(0, 2, 'X')
-        expect(tictactoe.postAMove(2, 2, 'Y'))
+        expect(tictactoe.postAMove(2, 2, 'O'))
         .eql({ 'winner': 'not decided yet'});
         tictactoe.postAMove(1, 2, 'X')
-        expect(tictactoe.postAMove(1, 1, 'Y'))
-        .eql({ 'winner': 'Y'});
+        expect(tictactoe.postAMove(1, 1, 'O'))
+        .eql({ 'winner': 'O'});
     })
     it('win if there are three contiguopus moves on a upwards diagonal', () => {
         let tictactoe = new TicTacToe()
         tictactoe.postAMove(1, 0, 'X')
-        expect(tictactoe.postAMove(2, 0, 'Y'))
+        expect(tictactoe.postAMove(2, 0, 'O'))
         .eql({ 'winner': 'not decided yet'});
         tictactoe.postAMove(1, 2, 'X')
-        expect(tictactoe.postAMove(0, 2, 'Y'))
+        expect(tictactoe.postAMove(0, 2, 'O'))
         .eql({ 'winner': 'not decided yet'});
         tictactoe.postAMove(2, 1, 'X')
-        expect(tictactoe.postAMove(1, 1, 'Y'))
-        .eql({ 'winner': 'Y'});
+        expect(tictactoe.postAMove(1, 1, 'O'))
+        .eql({ 'winner': 'O'});
     });
     it('prevent playing out of the board', () => {
         let tictactoe = new TicTacToe()
@@ -323,7 +326,7 @@ describe('TicTacToe Should', () => {
     it('prevent wrong player from posting',() => {
         let tictactoe = new TicTacToe();
 
-        expect(tictactoe.postAMove(1,1,'Y'))
+        expect(tictactoe.postAMove(1,1,'O'))
         .eql({'error': 'move by an incorrect player, expected X'})
     })
 });
