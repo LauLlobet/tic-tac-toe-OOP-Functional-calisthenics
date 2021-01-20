@@ -94,5 +94,16 @@ describe('TicTacToe Should', () => {
         expect(tictactoe.postAMove(0, 1, 'X'))
         .eql({ 'winner': 'X'});
     })
+    it('win if there are three contiguopus moves on a downwards diagonal', () => {
+        let tictactoe = new TicTacToe()
+        expect(tictactoe.postAMove(0, 0, 'X'))
+        .eql({ 'winner': 'not decided yet'});
+        tictactoe.postAMove(0, 2, 'Y')
+        expect(tictactoe.postAMove(2, 2, 'X'))
+        .eql({ 'winner': 'not decided yet'});
+        tictactoe.postAMove(1, 2, 'Y')
+        expect(tictactoe.postAMove(1, 1, 'X'))
+        .eql({ 'winner': 'X'});
+    })
    
 });
