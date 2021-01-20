@@ -3,12 +3,16 @@ import { expect } from 'chai';
 class TicTacToe {
     public rows = [0,0,0]
     public columns = [0,0,0]
+    public diagonal = 0
     postAMove(x: number, y: number, player: string): any {
         if(player == 'X'){
             this.rows[y] = this.rows[y] +1
             this.columns[x] = this.columns[x] +1
+            if(x==y){
+                this.diagonal++
+            }
         }
-        if(this.rows[y] < 3 && this.columns[x] <3){
+        if(this.rows[y] < 3 && this.columns[x] <3 && this.diagonal<3){
             return { 'winner': 'not decided yet'}
         }
         return { 'winner': 'X'}
