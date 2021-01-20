@@ -138,6 +138,17 @@ describe('TicTacToe Should', () => {
         .eql({ 'winner': 'X'});
     })
 
+    it('do not win if there are ">" shape done with two diagonals', () => {
+        let tictactoe = new TicTacToe()
+        expect(tictactoe.postAMove(0, 0, 'X'))
+        .eql({ 'winner': 'not decided yet'});
+        tictactoe.postAMove(1, 2, 'Y')
+        expect(tictactoe.postAMove(1, 1, 'X'))
+        .eql({ 'winner': 'not decided yet'});
+        tictactoe.postAMove(2, 1, 'Y')
+        expect(tictactoe.postAMove(0, 1, 'X'))
+        .eql({ 'winner': 'not decided yet'});
+    })
 
     //Y PLAYER WINS
     it('not win if theres no 3 contiguous moves', () => {
