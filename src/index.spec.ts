@@ -2,11 +2,13 @@ import { expect } from 'chai';
  
 class TicTacToe {
     public Xmoves = 0
+    public rows = [0,0,0]
     postAMove(x: number, y: number, player: string): any {
-        if(player == 'X' && y == 1){
+        if(player == 'X'){
             this.Xmoves++
+            this.rows[y] = this.rows[y] +1
         }
-        if(this.Xmoves < 3){
+        if(this.rows[y] < 3){
             return { 'winner': 'not decided yet'}
         }
         return { 'winner': 'X'}
