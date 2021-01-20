@@ -7,10 +7,10 @@ import { expect } from 'chai';
 👌 First class collections (wrap all collections)
 👌 Only one dot per line dog.Body.Tail.Wag() => dog.ExpressHappiness()
 👌 No abbreviations
-   Keep all entities small
+👌 Keep all entities small
 👌 [10 files per package, 
 👌  50 lines per class, 
-    5 lines per method, 
+👌   5 lines per method, 
 👌  2 arguments per method]
    No classes with more than two instance variables
 👌 No public getters/setters/properties
@@ -35,7 +35,6 @@ class TicTacToe {
             return this.winnerJsonFor(O.toString()) 
         return this.winnerNotDecidedJson() 
     }
-
     winnerJsonFor(symbol: string): object {
         return { 'winner': symbol}
     }
@@ -48,18 +47,18 @@ class TicTacToe {
     private alreadyUsedMove: { [moveId: string] : boolean; } = {};
     private isOLastMove = true;
     isElegible(movePosition: MovePosition, movePlayerSymbol: Symbol): any {
-        if(O.equals(movePlayerSymbol) && this.isOLastMove ){
+        if(O.equals(movePlayerSymbol) && this.isOLastMove )
             return {'invalidMoveMessage': { 'error': 'move by an incorrect player, expected X'}, 'isValidMove': false};
-        }
-        this.isOLastMove = O.equals(movePlayerSymbol)
-        if(Board.isOutsideRange(movePosition)){
+        if(Board.isOutsideRange(movePosition))
             return {'invalidMoveMessage': { 'error': 'move out of the board'}, 'isValidMove': false};
-        }
-        if(this.alreadyUsedMove[movePosition.id()]){
+        if(this.alreadyUsedMove[movePosition.id()])
             return {'invalidMoveMessage': { 'error': 'move on already taken place'}, 'isValidMove': false};
-        }
-        this.alreadyUsedMove[movePosition.id()] = true;
+        this.saveNewState(movePosition,movePlayerSymbol)
         return {'isValidMove': true};
+    }
+    saveNewState(movePosition, movePlayerSymbol){
+        this.isOLastMove = O.equals(movePlayerSymbol)
+        this.alreadyUsedMove[movePosition.id()] = true;
     }
 }
  class WinningPlayerTracker {
@@ -69,17 +68,23 @@ class TicTacToe {
     private accumulatedSymbolsInUpwardsDiagonal = 0
 
     trackAndCheckIfHasWon(move: MovePosition): boolean {
+        this.accumulate(move);
+        if(this.hasWon(move)){
+            return true
+        }
+        return false
+    }
+    hasWon(move: MovePosition){
+        return this.accumulatedSymbolsPerRow.isFullOn(move.row)
+        || this.accumulatedSymbolsPerColumn.isFullOn(move.column)
+        || this.accumulatedSymbolsInDownwardsDiagonal >=  Board.rowColumnAndDiagonalLength()
+        || this.accumulatedSymbolsInUpwardsDiagonal >=  Board.rowColumnAndDiagonalLength()
+    }
+    accumulate(move: MovePosition){
         this.accumulatedSymbolsPerRow.accumulateOneMoreAt(move.row)
         this.accumulatedSymbolsPerColumn.accumulateOneMoreAt(move.column)
         this.accumulatedSymbolsInDownwardsDiagonal += move.isInAscendingDiagonal() ? 1 : 0
         this.accumulatedSymbolsInUpwardsDiagonal += move.isInDescendingDiagonal() ? 1 :0
-        if(    this.accumulatedSymbolsPerRow.isFullOn(move.row)
-            || this.accumulatedSymbolsPerColumn.isFullOn(move.column)
-            || this.accumulatedSymbolsInDownwardsDiagonal >=  Board.rowColumnAndDiagonalLength()
-            || this.accumulatedSymbolsInUpwardsDiagonal >=  Board.rowColumnAndDiagonalLength()){
-            return true
-        }
-        return false
     }
  }
 
