@@ -3,7 +3,7 @@ import { expect } from 'chai';
 class TicTacToe {
     public Xmoves = 0
     postAMove(x: number, y: number, player: string): any {
-        if(player == 'X'){
+        if(player == 'X' && y == 1){
             this.Xmoves++
         }
         if(this.Xmoves < 3){
