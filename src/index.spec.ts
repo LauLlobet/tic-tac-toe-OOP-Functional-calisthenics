@@ -4,7 +4,7 @@ import { expect } from 'chai';
 👌 Only one level of indentation per method
 👌 Don’t use the ELSE keyword
 👌 Wrap all primitives and strings
-   First class collections (wrap all collections)
+👌 First class collections (wrap all collections)
 👌 Only one dot per line dog.Body.Tail.Wag() => dog.ExpressHappiness()
 👌 No abbreviations
    Keep all entities small
