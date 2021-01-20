@@ -25,16 +25,22 @@ class TicTacToe {
         var move = new MovePosition(moveColumn,moveRow)
         var movePlayerSymbol : Symbol = movePlayerSymbolString == O.toString() ? new O() : new X();
         var {isValidMove, invalidMoveMessage} = this.moveEligibilityChecker.isElegible(move,movePlayerSymbol);
-        if(!isValidMove){
-            return invalidMoveMessage;
-        }
-        if(X.equals(movePlayerSymbol) && this.xPlayerTracker.trackAndCheckIfHasWon(move)){
-            return { 'winner': X.toString()}
-        }
-        if(O.equals(movePlayerSymbol) && this.oPlayerTracker.trackAndCheckIfHasWon(move)){
-            return { 'winner': O.toString()}
-        }
-        return {'winner': 'not decided yet'}
+        if(!isValidMove){ return invalidMoveMessage; }
+        return this.trackAndCheckWinner(move,movePlayerSymbol)
+    }
+    trackAndCheckWinner(move: MovePosition, movePlayerSymbol: Symbol): object{
+        if(X.equals(movePlayerSymbol) && this.xPlayerTracker.trackAndCheckIfHasWon(move))
+            return this.winnerJsonFor(X.toString())
+        if(O.equals(movePlayerSymbol) && this.oPlayerTracker.trackAndCheckIfHasWon(move))
+            return this.winnerJsonFor(O.toString()) 
+        return this.winnerNotDecidedJson() 
+    }
+
+    winnerJsonFor(symbol: string): object {
+        return { 'winner': symbol}
+    }
+    winnerNotDecidedJson(): object {
+        return this.winnerJsonFor('not decided yet')
     }
  }
 
