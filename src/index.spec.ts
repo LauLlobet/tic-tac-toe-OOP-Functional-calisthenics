@@ -5,25 +5,21 @@ class TicTacToe {
     yTracker = new WinningPlayerTracker();
 
     postAMove(x: number, y: number, player: string): any {
-        if('X' == player){
-            if(this.xTracker.trackAndCheckHasWonX(x,y)){
-                return { 'winner': 'X'}
-            }
+        if('X' == player && this.xTracker.trackAndCheckHasWonX(x,y)){
+            return { 'winner': 'X'}
         }
-        if('Y' == player){
-            if(this.yTracker.trackAndCheckHasWonX(x,y)){
-                return { 'winner': 'Y'}
-            }
+        if('Y' == player && this.yTracker.trackAndCheckHasWonX(x,y)){
+            return { 'winner': 'Y'}
         }
         return {'winner': 'not decided yet'}
     }
  }
 
  class WinningPlayerTracker {
-    public rows = [0,0,0]
-    public columns = [0,0,0]
-    public diagonal = 0
-    public upwardsDiagonal = 0
+    private rows = [0,0,0]
+    private columns = [0,0,0]
+    private diagonal = 0
+    private upwardsDiagonal = 0
     trackAndCheckHasWonX(x: number, y: number): any {
         this.rows[y] = this.rows[y] +1
         this.columns[x] = this.columns[x] +1
