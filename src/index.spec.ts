@@ -46,7 +46,7 @@ class TicTacToe {
             return {'invalidMoveMessage': { 'error': 'move by an incorrect player, expected X'}, 'isValidMove': false};
         }
         this.isOLastMove = O.equals(movePlayerSymbol)
-        if( movePosition.column > 2 || movePosition.column < 0 || movePosition.row > 2 || movePosition.row < 0){
+        if(Board.isOutsideRange(movePosition)){
             return {'invalidMoveMessage': { 'error': 'move out of the board'}, 'isValidMove': false};
         }
         if(this.alreadyUsedMove[movePosition.id()]){
@@ -77,7 +77,13 @@ class TicTacToe {
     }
  }
 
-class MovePosition {
+ class Board {
+    static isOutsideRange(movePosition: MovePosition){
+        return movePosition.column > 2 || movePosition.column < 0 || movePosition.row > 2 || movePosition.row < 0;
+    }
+}
+
+ class MovePosition {
     column: number; 
     row: number; 
     constructor(column: number, row: number){ this.column = column; this.row = row}
