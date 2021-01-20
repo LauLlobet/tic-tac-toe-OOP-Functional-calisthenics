@@ -13,7 +13,7 @@ import { expect } from 'chai';
     5 lines per method, 
 👌  2 arguments per method]
    No classes with more than two instance variables
-   No public getters/setters/properties
+👌 No public getters/setters/properties
 */
 
 class TicTacToe {
@@ -23,16 +23,16 @@ class TicTacToe {
 
     postAMove(moveColumn: number, moveRow: number, movePlayerSymbolString: string): any {
         var move = new MovePosition(moveColumn,moveRow)
-        var movePlayerSymbol : Symbol = movePlayerSymbolString == O.ssymbol() ? new O() : new X();
+        var movePlayerSymbol : Symbol = movePlayerSymbolString == O.toString() ? new O() : new X();
         var {isValidMove, invalidMoveMessage} = this.moveEligibilityChecker.isElegible(move,movePlayerSymbol);
         if(!isValidMove){
             return invalidMoveMessage;
         }
         if(X.equals(movePlayerSymbol) && this.xPlayerTracker.trackAndCheckIfHasWon(move)){
-            return { 'winner': X.ssymbol()}
+            return { 'winner': X.toString()}
         }
         if(O.equals(movePlayerSymbol) && this.oPlayerTracker.trackAndCheckIfHasWon(move)){
-            return { 'winner': O.ssymbol()}
+            return { 'winner': O.toString()}
         }
         return {'winner': 'not decided yet'}
     }
@@ -109,8 +109,8 @@ class TicTacToe {
 }
 
 interface Symbol {symbol: string}
-class X implements Symbol {static ssymbol(){return 'X'}; symbol='X' ; static equals(symbol :Symbol){return symbol.symbol == this.ssymbol()} }
-class O implements Symbol {static ssymbol(){return 'O'}; symbol='O' ; static equals(symbol :Symbol){return symbol.symbol == this.ssymbol()} }
+class X implements Symbol {static toString(){return 'X'}; symbol='X' ; static equals(symbol :Symbol){return symbol.symbol == this.toString()} }
+class O implements Symbol {static toString(){return 'O'}; symbol='O' ; static equals(symbol :Symbol){return symbol.symbol == this.toString()} }
 
 
 
