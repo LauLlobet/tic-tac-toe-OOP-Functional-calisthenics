@@ -4,6 +4,7 @@ class TicTacToe {
     public rows = [0,0,0]
     public columns = [0,0,0]
     public diagonal = 0
+    public upwardsDiagonal = 0
     postAMove(x: number, y: number, player: string): any {
         if(player == 'X'){
             this.rows[y] = this.rows[y] +1
@@ -11,8 +12,11 @@ class TicTacToe {
             if(x==y){
                 this.diagonal++
             }
+            if(x+y==2){
+                this.upwardsDiagonal++
+            }
         }
-        if(this.rows[y] < 3 && this.columns[x] <3 && this.diagonal<3){
+        if(this.rows[y] < 3 && this.columns[x] <3 && this.diagonal<3 && this.upwardsDiagonal < 3){
             return { 'winner': 'not decided yet'}
         }
         return { 'winner': 'X'}
