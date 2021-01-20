@@ -11,24 +11,26 @@ import { expect } from 'chai';
 👌 [10 files per package, 
 👌  50 lines per class, 
     5 lines per method, 
-    2 arguments per method]
+👌  2 arguments per method]
    No classes with more than two instance variables
-👌 No public getters/setters/properties
+   No public getters/setters/properties
 */
+
 class TicTacToe {
     private xPlayerTracker = new WinningPlayerTracker();
     private oPlayerTracker = new WinningPlayerTracker();    
     private moveEligibilityChecker = new MoveElegibilityChecker();
 
     postAMove(moveColumn: number, moveRow: number, movePlayerSymbol: string): any {
-        var {isValidMove, invalidMoveMessage} = this.moveEligibilityChecker.isElegible(moveColumn,moveRow,movePlayerSymbol);
+        var move = new MovePosition(moveColumn,moveRow)
+        var {isValidMove, invalidMoveMessage} = this.moveEligibilityChecker.isElegible(move,movePlayerSymbol);
         if(!isValidMove){
             return invalidMoveMessage;
         }
-        if('X' == movePlayerSymbol && this.xPlayerTracker.trackAndCheckIfHasWon(moveColumn,moveRow)){
+        if('X' == movePlayerSymbol && this.xPlayerTracker.trackAndCheckIfHasWon(move)){
             return { 'winner': 'X'}
         }
-        if('O' == movePlayerSymbol && this.oPlayerTracker.trackAndCheckIfHasWon(moveColumn,moveRow)){
+        if('O' == movePlayerSymbol && this.oPlayerTracker.trackAndCheckIfHasWon(move)){
             return { 'winner': 'O'}
         }
         return {'winner': 'not decided yet'}
@@ -38,18 +40,18 @@ class TicTacToe {
  class MoveElegibilityChecker {
     private alreadyUsedMove: { [moveId: string] : boolean; } = {};
     private isPreviousMoveO = true;
-    isElegible(moveColumn: number, moveRow: number, movePlayerSymbol: string): any {
+    isElegible(movePosition: MovePosition, movePlayerSymbol: string): any {
         if(movePlayerSymbol !== 'X' && this.isPreviousMoveO ){
             return {'invalidMoveMessage': { 'error': 'move by an incorrect player, expected X'}, 'isValidMove': false};
         }
         this.isPreviousMoveO = movePlayerSymbol === 'O'
-        if( moveColumn > 2 || moveColumn < 0 || moveRow > 2 || moveRow < 0){
+        if( movePosition.column > 2 || movePosition.column < 0 || movePosition.row > 2 || movePosition.row < 0){
             return {'invalidMoveMessage': { 'error': 'move out of the board'}, 'isValidMove': false};
         }
-        if(this.alreadyUsedMove[moveColumn+""+moveRow]){
+        if(this.alreadyUsedMove[movePosition.id()]){
             return {'invalidMoveMessage': { 'error': 'move on already taken place'}, 'isValidMove': false};
         }
-        this.alreadyUsedMove[moveColumn+""+moveRow] = true;
+        this.alreadyUsedMove[movePosition.id()] = true;
         return {'isValidMove': true};
     }
 }
@@ -59,13 +61,13 @@ class TicTacToe {
     private accumulatedSymbolsInDownwardsDiagonal = 0
     private accumulatedSymbolsInUpwardsDiagonal = 0
 
-    trackAndCheckIfHasWon(newSymbolColumn: number, newSymbolRow: number): boolean {
-        this.accumulatedSymbolsPerRow[newSymbolRow]++
-        this.accumulatedSymbolsPerColumn[newSymbolColumn]++
-        this.accumulatedSymbolsInDownwardsDiagonal += newSymbolColumn==newSymbolRow ? 1 : 0
-        this.accumulatedSymbolsInUpwardsDiagonal += newSymbolColumn+newSymbolRow==2 ? 1 :0
-        if(this.accumulatedSymbolsPerRow[newSymbolRow] < 3 
-            && this.accumulatedSymbolsPerColumn[newSymbolColumn] <3 
+    trackAndCheckIfHasWon(move: MovePosition): boolean {
+        this.accumulatedSymbolsPerRow[move.row]++
+        this.accumulatedSymbolsPerColumn[move.column]++
+        this.accumulatedSymbolsInDownwardsDiagonal += move.row==move.column ? 1 : 0
+        this.accumulatedSymbolsInUpwardsDiagonal += move.column+move.row==2 ? 1 :0
+        if(    this.accumulatedSymbolsPerRow[move.row] < 3 
+            && this.accumulatedSymbolsPerColumn[move.column] <3 
             && this.accumulatedSymbolsInDownwardsDiagonal<3 
             && this.accumulatedSymbolsInUpwardsDiagonal<3){
             return false
@@ -73,6 +75,14 @@ class TicTacToe {
         return true
     }
  }
+
+class MovePosition {
+    column: number; 
+    row: number; 
+    constructor(column: number, row: number){ this.column = column; this.row = row}
+    id():string{return this.column+"-"+this.row} 
+}
+
 
 
 describe('TicTacToe Should', () => {
