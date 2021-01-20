@@ -8,9 +8,9 @@ class TicTacToe {
 
 
 describe('TicTacToe Should', () => {
-    it('prevent playing out of the board', () => {
+    it('not win if theres no 3 contiguous moves', () => {
         let tictactoe = new TicTacToe()
-        expect(tictactoe.postAMove(4, 1, 'X'))
-        .eql({ 'error': 'move out of the board'});
+        expect(tictactoe.postAMove(1, 1, 'X'))
+        .eql({ 'winner': 'not decided yet'});
     });
 });
