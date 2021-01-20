@@ -13,11 +13,11 @@ import { expect } from 'chai';
     5 lines per method, 
     2 arguments per method]
    No classes with more than two instance variables
-   No public getters/setters/properties
+👌 No public getters/setters/properties
 */
 class TicTacToe {
-    xTracker = new WinningPlayerTracker();
-    yTracker = new WinningPlayerTracker();    
+    private xTracker = new WinningPlayerTracker();
+    private yTracker = new WinningPlayerTracker();    
     private tttMoveEligibility = new TTTMoveElegibility();
 
     postAMove(x: number, y: number, player: string): any {
