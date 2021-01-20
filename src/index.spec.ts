@@ -65,8 +65,8 @@ class TicTacToe {
     trackAndCheckIfHasWon(move: MovePosition): boolean {
         this.accumulatedSymbolsPerRow.accumulateOneMoreAt(move.row)
         this.accumulatedSymbolsPerColumn.accumulateOneMoreAt(move.column)
-        this.accumulatedSymbolsInDownwardsDiagonal += move.row==move.column ? 1 : 0
-        this.accumulatedSymbolsInUpwardsDiagonal += move.column+move.row==2 ? 1 :0
+        this.accumulatedSymbolsInDownwardsDiagonal += move.isInAscendingDiagonal() ? 1 : 0
+        this.accumulatedSymbolsInUpwardsDiagonal += move.isInDescendingDiagonal() ? 1 :0
         if(    this.accumulatedSymbolsPerRow.isFullOn(move.row)
             || this.accumulatedSymbolsPerColumn.isFullOn(move.column)
             || this.accumulatedSymbolsInDownwardsDiagonal >=  Board.rowColumnAndDiagonalLength()
@@ -96,6 +96,12 @@ class TicTacToe {
 }
 
  class MovePosition {
+    isInDescendingDiagonal():boolean {
+        return this.column+this.row==2
+    }
+    isInAscendingDiagonal():boolean {
+       return this.row==this.column 
+    }
     column: number; 
     row: number; 
     constructor(column: number, row: number){ this.column = column; this.row = row}
