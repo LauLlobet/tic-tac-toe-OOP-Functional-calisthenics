@@ -2,11 +2,13 @@ import { expect } from 'chai';
  
 class TicTacToe {
     public rows = [0,0,0]
+    public columns = [0,0,0]
     postAMove(x: number, y: number, player: string): any {
         if(player == 'X'){
             this.rows[y] = this.rows[y] +1
+            this.columns[x] = this.columns[x] +1
         }
-        if(this.rows[y] < 3){
+        if(this.rows[y] < 3 && this.columns[x] <3){
             return { 'winner': 'not decided yet'}
         }
         return { 'winner': 'X'}
@@ -21,7 +23,7 @@ describe('TicTacToe Should', () => {
         .eql({ 'winner': 'not decided yet'});
         tictactoe.postAMove(0, 2, 'Y')
         tictactoe.postAMove(1, 1, 'X')
-        tictactoe.postAMove(1, 2, 'X')
+        tictactoe.postAMove(1, 2, 'Y')
         expect(tictactoe.postAMove(1, 0, 'X'))
         .eql({ 'winner': 'not decided yet'});
 
