@@ -57,26 +57,35 @@ class TicTacToe {
     }
 }
  class WinningPlayerTracker {
-    private accumulatedSymbolsPerRow = [0,0,0]
-    private accumulatedSymbolsPerColumn = [0,0,0]
+    private accumulatedSymbolsPerRow : AccumulatedSymbolsPerAxis= new AccumulatedSymbolsPerAxis();
+    private accumulatedSymbolsPerColumn : AccumulatedSymbolsPerAxis= new AccumulatedSymbolsPerAxis();
     private accumulatedSymbolsInDownwardsDiagonal = 0
     private accumulatedSymbolsInUpwardsDiagonal = 0
 
     trackAndCheckIfHasWon(move: MovePosition): boolean {
-        this.accumulatedSymbolsPerRow[move.row]++
-        this.accumulatedSymbolsPerColumn[move.column]++
+        this.accumulatedSymbolsPerRow.accumulateOneMoreAt(move.row)
+        this.accumulatedSymbolsPerColumn.accumulateOneMoreAt(move.column)
         this.accumulatedSymbolsInDownwardsDiagonal += move.row==move.column ? 1 : 0
         this.accumulatedSymbolsInUpwardsDiagonal += move.column+move.row==2 ? 1 :0
-        if(    this.accumulatedSymbolsPerRow[move.row] <  Board.rowColumnAndDiagonalLength()
-            && this.accumulatedSymbolsPerColumn[move.column] < Board.rowColumnAndDiagonalLength()
-            && this.accumulatedSymbolsInDownwardsDiagonal<  Board.rowColumnAndDiagonalLength()
-            && this.accumulatedSymbolsInUpwardsDiagonal<  Board.rowColumnAndDiagonalLength()){
-            return false
+        if(    this.accumulatedSymbolsPerRow.isFullOn(move.row)
+            || this.accumulatedSymbolsPerColumn.isFullOn(move.column)
+            || this.accumulatedSymbolsInDownwardsDiagonal >=  Board.rowColumnAndDiagonalLength()
+            || this.accumulatedSymbolsInUpwardsDiagonal >=  Board.rowColumnAndDiagonalLength()){
+            return true
         }
-        return true
+        return false
     }
  }
 
+ class AccumulatedSymbolsPerAxis {
+    private accumulatedSymbolsPerAxis = [0,0,0]
+    public accumulateOneMoreAt(positionInAxis: number){
+        this.accumulatedSymbolsPerAxis[positionInAxis]++
+    }
+    public isFullOn(positionInAxis: number): boolean{
+        return this.accumulatedSymbolsPerAxis[positionInAxis] >=  Board.rowColumnAndDiagonalLength()
+    }
+ }
  class Board {
     static isOutsideRange(movePosition: MovePosition){
         return movePosition.column > 2 || movePosition.column < 0 || movePosition.row > 2 || movePosition.row < 0;
