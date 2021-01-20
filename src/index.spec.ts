@@ -20,12 +20,13 @@ class TicTacToe {
     private columns = [0,0,0]
     private diagonal = 0
     private upwardsDiagonal = 0
-    trackAndCheckHasWonX(x: number, y: number): any {
+
+    trackAndCheckHasWonX(x: number, y: number): boolean {
         this.rows[y]++
         this.columns[x]++
         this.diagonal += x==y ? 1 : 0
         this.upwardsDiagonal += x+y==2 ? 1 :0
-        if(this.rows[y] < 3 && this.columns[x] <3 && this.diagonal<3 && this.upwardsDiagonal < 3){
+        if(this.rows[y] < 3 && this.columns[x] <3 && this.diagonal<3 && this.upwardsDiagonal<3){
             return false
         }
         return true
