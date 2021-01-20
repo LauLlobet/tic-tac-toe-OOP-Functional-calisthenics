@@ -61,6 +61,17 @@ describe('TicTacToe Should', () => {
         expect(tictactoe.postAMove(1, 0, 'X'))
         .eql({ 'winner': 'X'});
     })
+    it('win if there are three contiguopus moves on a first column', () => {
+        let tictactoe = new TicTacToe()
+        expect(tictactoe.postAMove(1, 0, 'X'))
+        .eql({ 'winner': 'not decided yet'});
+        tictactoe.postAMove(2, 0, 'Y')
+        expect(tictactoe.postAMove(1, 2, 'X'))
+        .eql({ 'winner': 'not decided yet'});
+        tictactoe.postAMove(2, 2, 'Y')
+        expect(tictactoe.postAMove(1, 1, 'X'))
+        .eql({ 'winner': 'X'});
+    })
     it('win if there are three contiguopus moves on a second column', () => {
         let tictactoe = new TicTacToe()
         expect(tictactoe.postAMove(2, 0, 'X'))
