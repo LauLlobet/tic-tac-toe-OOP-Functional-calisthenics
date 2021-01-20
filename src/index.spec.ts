@@ -67,10 +67,10 @@ class TicTacToe {
         this.accumulatedSymbolsPerColumn[move.column]++
         this.accumulatedSymbolsInDownwardsDiagonal += move.row==move.column ? 1 : 0
         this.accumulatedSymbolsInUpwardsDiagonal += move.column+move.row==2 ? 1 :0
-        if(    this.accumulatedSymbolsPerRow[move.row] < 3 
-            && this.accumulatedSymbolsPerColumn[move.column] <3 
-            && this.accumulatedSymbolsInDownwardsDiagonal<3 
-            && this.accumulatedSymbolsInUpwardsDiagonal<3){
+        if(    this.accumulatedSymbolsPerRow[move.row] <  Board.rowColumnAndDiagonalLength()
+            && this.accumulatedSymbolsPerColumn[move.column] < Board.rowColumnAndDiagonalLength()
+            && this.accumulatedSymbolsInDownwardsDiagonal<  Board.rowColumnAndDiagonalLength()
+            && this.accumulatedSymbolsInUpwardsDiagonal<  Board.rowColumnAndDiagonalLength()){
             return false
         }
         return true
@@ -80,6 +80,9 @@ class TicTacToe {
  class Board {
     static isOutsideRange(movePosition: MovePosition){
         return movePosition.column > 2 || movePosition.column < 0 || movePosition.row > 2 || movePosition.row < 0;
+    }
+    static rowColumnAndDiagonalLength(){
+        return 3;
     }
 }
 
