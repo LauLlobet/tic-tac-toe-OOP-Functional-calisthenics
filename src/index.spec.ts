@@ -60,7 +60,9 @@ class TicTacToe {
     private lastMovePlayerWasY = true;
     postAMove(x: number, y: number, player: string): any {
         let result: Either<any,any> = pipe( 
+            //DB READ
             {"player": player, "lastMovePlayerWasY": this.lastMovePlayerWasY, "x":x , "y":y, "alreadyUsed": this.alreadyUsed},
+            //
             errorIfWrongTurn,
             handlePreviousError_or_OutOfBoard,
             handlePreviousError_or_AlreadyTakenPlace
@@ -68,8 +70,10 @@ class TicTacToe {
         if (isLeft(result)){
             return result.left
         }
+        //DB WRITE
         this.lastMovePlayerWasY = player === 'Y'
         this.alreadyUsed[x+""+y] = true;
+        //
         return { 'status': 'OK'}
     }
  }
