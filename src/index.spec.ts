@@ -21,17 +21,18 @@ class TicTacToe {
     private oPlayerTracker = new WinningPlayerTracker();    
     private moveEligibilityChecker = new MoveElegibilityChecker();
 
-    postAMove(moveColumn: number, moveRow: number, movePlayerSymbol: string): any {
+    postAMove(moveColumn: number, moveRow: number, movePlayerSymbolString: string): any {
         var move = new MovePosition(moveColumn,moveRow)
+        var movePlayerSymbol : Symbol = movePlayerSymbolString == O.ssymbol() ? new O() : new X();
         var {isValidMove, invalidMoveMessage} = this.moveEligibilityChecker.isElegible(move,movePlayerSymbol);
         if(!isValidMove){
             return invalidMoveMessage;
         }
-        if('X' == movePlayerSymbol && this.xPlayerTracker.trackAndCheckIfHasWon(move)){
-            return { 'winner': 'X'}
+        if(X.equals(movePlayerSymbol) && this.xPlayerTracker.trackAndCheckIfHasWon(move)){
+            return { 'winner': X.ssymbol()}
         }
-        if('O' == movePlayerSymbol && this.oPlayerTracker.trackAndCheckIfHasWon(move)){
-            return { 'winner': 'O'}
+        if(O.equals(movePlayerSymbol) && this.oPlayerTracker.trackAndCheckIfHasWon(move)){
+            return { 'winner': O.ssymbol()}
         }
         return {'winner': 'not decided yet'}
     }
@@ -39,12 +40,12 @@ class TicTacToe {
 
  class MoveElegibilityChecker {
     private alreadyUsedMove: { [moveId: string] : boolean; } = {};
-    private isPreviousMoveO = true;
-    isElegible(movePosition: MovePosition, movePlayerSymbol: string): any {
-        if(movePlayerSymbol !== 'X' && this.isPreviousMoveO ){
+    private isOLastMove = true;
+    isElegible(movePosition: MovePosition, movePlayerSymbol: Symbol): any {
+        if(O.equals(movePlayerSymbol) && this.isOLastMove ){
             return {'invalidMoveMessage': { 'error': 'move by an incorrect player, expected X'}, 'isValidMove': false};
         }
-        this.isPreviousMoveO = movePlayerSymbol === 'O'
+        this.isOLastMove = O.equals(movePlayerSymbol)
         if( movePosition.column > 2 || movePosition.column < 0 || movePosition.row > 2 || movePosition.row < 0){
             return {'invalidMoveMessage': { 'error': 'move out of the board'}, 'isValidMove': false};
         }
@@ -82,6 +83,11 @@ class MovePosition {
     constructor(column: number, row: number){ this.column = column; this.row = row}
     id():string{return this.column+"-"+this.row} 
 }
+
+interface Symbol {symbol: string}
+class X implements Symbol {static ssymbol(){return 'X'}; symbol='X' ; static equals(symbol :Symbol){return symbol.symbol == this.ssymbol()} }
+class O implements Symbol {static ssymbol(){return 'O'}; symbol='O' ; static equals(symbol :Symbol){return symbol.symbol == this.ssymbol()} }
+
 
 
 
