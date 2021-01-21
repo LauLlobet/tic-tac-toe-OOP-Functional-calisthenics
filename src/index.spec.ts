@@ -50,15 +50,25 @@ describe('TicTacToe Should', () => {
         .eql({'error': 'move by an incorrect player, expected X'})
     })
 });
+
+class BoardConstraints {
+    public maximumWidthAndheight = 2;
+    public minimumWidthAndheight = 0;
+}
 class TTTMoveElegibility {
     private alreadyUsed: { [id: string] : boolean; } = {};
     private lastMovePlayerWasY = true;
+    private boardConstraints = new BoardConstraints();
+
     isElegible(x: number, y: number, player: string): any {
         if(player !== 'X' && this.lastMovePlayerWasY ){
             return {'message': { 'error': 'move by an incorrect player, expected X'}, 'isElegible': false};
         }
         this.lastMovePlayerWasY = player === 'Y'
-        if( x > 2 || x < 0 || y > 2 || y < 0){
+        if( x > this.boardConstraints.maximumWidthAndheight 
+            || x < this.boardConstraints.minimumWidthAndheight
+            || y > this.boardConstraints.maximumWidthAndheight  
+            || y < this.boardConstraints.minimumWidthAndheight) {
             return {'message': { 'error': 'move out of the board'}, 'isElegible': false};
         }
         if(this.alreadyUsed[x+""+y]){
