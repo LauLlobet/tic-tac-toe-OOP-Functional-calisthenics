@@ -51,24 +51,28 @@ describe('TicTacToe Should', () => {
     })
 });
 
-class BoardConstraints {
-    public maximumWidthAndheight = 2;
+class SquareBoardConstraints {
+    public maximumWidthAndHeight = 2;
     public minimumWidthAndheight = 0;
+
+    isInsideBoard(x: number, y:number){
+        return x > this.maximumWidthAndHeight 
+        || x < this.minimumWidthAndheight
+        || y > this.maximumWidthAndHeight  
+        || y < this.minimumWidthAndheight
+    }
 }
 class TTTMoveElegibility {
     private alreadyUsed: { [id: string] : boolean; } = {};
     private lastMovePlayerWasY = true;
-    private boardConstraints = new BoardConstraints();
+    private boardConstraints = new SquareBoardConstraints();
 
     isElegible(x: number, y: number, player: string): any {
         if(player !== 'X' && this.lastMovePlayerWasY ){
             return {'message': { 'error': 'move by an incorrect player, expected X'}, 'isElegible': false};
         }
         this.lastMovePlayerWasY = player === 'Y'
-        if( x > this.boardConstraints.maximumWidthAndheight 
-            || x < this.boardConstraints.minimumWidthAndheight
-            || y > this.boardConstraints.maximumWidthAndheight  
-            || y < this.boardConstraints.minimumWidthAndheight) {
+        if(this.boardConstraints.isInsideBoard(x,y) ) {
             return {'message': { 'error': 'move out of the board'}, 'isElegible': false};
         }
         if(this.alreadyUsed[x+""+y]){
